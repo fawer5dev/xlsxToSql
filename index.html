@@ -1,37 +1,41 @@
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generar Consulta SQL desde Excel</title>
+    <title>Generate SQL Query from Excel</title>
+    <!-- Import SheetJS library for Excel file processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-<h3>Generar Consulta SQL desde Excel</h3>
+    <h3>Generate SQL Query from Excel</h3>
 
-<!-- Paso 1: Subir el archivo Excel -->
-<label for="file">Selecciona un archivo .xlsx:</label>
-<input type="file" id="file" accept=".xlsx" required>
-<button onclick="loadColumns()">Cargar Columnas</button>
+    <!-- Step 1: Upload Excel file -->
+    <label for="file">Select a .xlsx file:</label>
+    <input type="file" id="file" accept=".xlsx" required>
+    <button onclick="loadColumns()">Load Columns</button>
 
-<div id="mapping-container" class="mapping-container" style="display: none;">
-    <!-- Paso 2: Ingresar el nombre de la tabla MySQL -->
-    <div class="table-name-input">
-        <label for="table-name">Nombre de la tabla MySQL:</label>
-        <input type="text" id="table-name" placeholder="Ejemplo: providers" required>
+    <!-- Container for mapping interface (hidden by default) -->
+    <div id="mapping-container" class="mapping-container" style="display: none;">
+        <!-- Step 2: Enter MySQL table name -->
+        <div class="table-name-input">
+            <label for="table-name">MySQL table name:</label>
+            <input type="text" id="table-name" placeholder="Example: providers" required>
+        </div>
+
+        <!-- Step 3: Enter MySQL table columns -->
+        <div class="columns-input">
+            <label for="mysql-columns">MySQL table columns (comma separated):</label>
+            <input type="text" id="mysql-columns" placeholder="Example: business_name,municipality" required>
+        </div>
+
+        <!-- Step 4: Map Excel columns to MySQL columns -->
+        <h4>Column Mapping</h4>
+        <div id="column-mapping"></div>
+        <button onclick="generateSQL()">Generate SQL</button>
     </div>
 
-    <!-- Paso 3: Ingresar las columnas de la tabla MySQL -->
-    <div class="columns-input">
-        <label for="mysql-columns">Columnas de la tabla MySQL (separadas por comas):</label>
-        <input type="text" id="mysql-columns" placeholder="Ejemplo: business_name,municipality" required>
-    </div>
-
-    <!-- Paso 4: Mapear columnas -->
-    <h4>Mapeo de Columnas</h4>
-    <div id="column-mapping"></div>
-    <button onclick="generateSQL()">Generar SQL</button>
-</div>
-
-<pre id="output"></pre>
+    <!-- Output area for the generated SQL query -->
+    <pre id="output"></pre>
 </body>
 </html>
