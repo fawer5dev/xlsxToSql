@@ -1,0 +1,37 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Consulta SQL desde Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<h3>Generar Consulta SQL desde Excel</h3>
+
+<!-- Paso 1: Subir el archivo Excel -->
+<label for="file">Selecciona un archivo .xlsx:</label>
+<input type="file" id="file" accept=".xlsx" required>
+<button onclick="loadColumns()">Cargar Columnas</button>
+
+<div id="mapping-container" class="mapping-container" style="display: none;">
+    <!-- Paso 2: Ingresar el nombre de la tabla MySQL -->
+    <div class="table-name-input">
+        <label for="table-name">Nombre de la tabla MySQL:</label>
+        <input type="text" id="table-name" placeholder="Ejemplo: providers" required>
+    </div>
+
+    <!-- Paso 3: Ingresar las columnas de la tabla MySQL -->
+    <div class="columns-input">
+        <label for="mysql-columns">Columnas de la tabla MySQL (separadas por comas):</label>
+        <input type="text" id="mysql-columns" placeholder="Ejemplo: business_name,municipality" required>
+    </div>
+
+    <!-- Paso 4: Mapear columnas -->
+    <h4>Mapeo de Columnas</h4>
+    <div id="column-mapping"></div>
+    <button onclick="generateSQL()">Generar SQL</button>
+</div>
+
+<pre id="output"></pre>
+</body>
+</html>
