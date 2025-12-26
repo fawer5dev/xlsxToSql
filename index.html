@@ -3,39 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate SQL Query from Excel</title>
+    <title>Excel to SQL Converter</title>
     <!-- Import SheetJS library for Excel file processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Import Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="xlsx.css">
 </head>
 <body>
-    <h3>Generate SQL Query from Excel</h3>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-table"></i>
+                    <h1>Excel to SQL Converter</h1>
+                </div>
+                <p class="subtitle">Transform your Excel data into SQL INSERT statements effortlessly</p>
+            </div>
+        </header>
 
-    <!-- Step 1: Upload Excel file -->
-    <label for="file">Select a .xlsx file:</label>
-    <input type="file" id="file" accept=".xlsx" required>
-    <button onclick="loadColumns()">Load Columns</button>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Step Indicators -->
+            <div class="steps-indicator">
+                <div class="step active" id="step-1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Upload File</div>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" id="step-2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Configure</div>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" id="step-3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Map Columns</div>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" id="step-4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Generate SQL</div>
+                </div>
+            </div>
 
-    <!-- Container for mapping interface (hidden by default) -->
-    <div id="mapping-container" class="mapping-container" style="display: none;">
-        <!-- Step 2: Enter MySQL table name -->
-        <div class="table-name-input">
-            <label for="table-name">MySQL table name:</label>
-            <input type="text" id="table-name" placeholder="Example: providers" required>
+            <!-- Step 1: Upload Excel file -->
+            <div class="card upload-card">
+                <div class="card-header">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h2>Step 1: Upload Excel File</h2>
+                </div>
+                <div class="card-body">
+                    <div class="upload-area" id="upload-area">
+                        <i class="fas fa-file-excel upload-icon"></i>
+                        <p class="upload-text">Drag & drop your Excel file here or click to browse</p>
+                        <p class="upload-hint">Supports .xlsx files</p>
+                        <input type="file" id="file" accept=".xlsx" required>
+                        <button class="btn btn-primary" onclick="document.getElementById('file').click()">
+                            <i class="fas fa-folder-open"></i> Choose File
+                        </button>
+                    </div>
+                    <div class="file-info" id="file-info" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="file-name"></span>
+                        <button class="btn-icon" onclick="clearFile()" title="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-success btn-load" id="load-btn" onclick="loadColumns()" disabled>
+                        <i class="fas fa-download"></i> Load Columns
+                    </button>
+                </div>
+            </div>
+
+            <!-- Container for mapping interface (hidden by default) -->
+            <div id="mapping-container" class="mapping-container" style="display: none;">
+                <!-- Step 2: Enter MySQL table name -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-database"></i>
+                        <h2>Step 2: Configure Database Table</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="table-name">
+                                <i class="fas fa-table"></i> Table Name
+                            </label>
+                            <input type="text" id="table-name" class="input-field" placeholder="e.g., customers, products, orders" required>
+                            <small class="input-hint">Enter the name of your MySQL table</small>
+                        </div>
+
+                        <!-- Step 3: Enter MySQL table columns -->
+                        <div class="form-group">
+                            <label for="mysql-columns">
+                                <i class="fas fa-columns"></i> Table Columns
+                            </label>
+                            <input type="text" id="mysql-columns" class="input-field" placeholder="e.g., name, email, phone, address" required>
+                            <small class="input-hint">Comma-separated column names from your database table</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Map Excel columns to MySQL columns -->
+                <div class="card" id="mapping-card" style="display: none;">
+                    <div class="card-header">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h2>Step 3: Map Columns</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="mapping-description">Match each Excel column with the corresponding database column</p>
+                        <div id="column-mapping" class="column-mapping"></div>
+                        <button class="btn btn-primary btn-generate" onclick="generateSQL()">
+                            <i class="fas fa-code"></i> Generate SQL Query
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output area for the generated SQL query -->
+            <div class="card output-card" id="output-card" style="display: none;">
+                <div class="card-header">
+                    <i class="fas fa-code"></i>
+                    <h2>Step 4: Generated SQL Query</h2>
+                    <button class="btn btn-secondary btn-copy" onclick="copyToClipboard()" id="copy-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="output-stats" id="output-stats"></div>
+                    <pre id="output" class="output-code"></pre>
+                </div>
+            </div>
         </div>
 
-        <!-- Step 3: Enter MySQL table columns -->
-        <div class="columns-input">
-            <label for="mysql-columns">MySQL table columns (comma separated):</label>
-            <input type="text" id="mysql-columns" placeholder="Example: business_name,municipality" required>
-        </div>
-
-        <!-- Step 4: Map Excel columns to MySQL columns -->
-        <h4>Column Mapping</h4>
-        <div id="column-mapping"></div>
-        <button onclick="generateSQL()">Generate SQL</button>
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with <i class="fas fa-heart"></i> for developers</p>
+        </footer>
     </div>
 
-    <!-- Output area for the generated SQL query -->
-    <pre id="output"></pre>
+    <script src="xlsx.js"></script>
 </body>
 </html>
